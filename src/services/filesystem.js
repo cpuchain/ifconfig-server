@@ -112,7 +112,7 @@ const initDB = async () => {
   const DB_ROOT = getDBRoot();
 
   const VIEWS_ROOT = path.join(__dirname, '../../views');
-  const files = getFiles('views').map(f => f.replace('views/', ''));
+  const files = getFiles(VIEWS_ROOT).map(f => f.split('views/')[1]);
 
   // Create database dir if it doesn't exists
   initDir(DB_ROOT);
