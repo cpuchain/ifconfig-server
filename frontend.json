@@ -1,0 +1,7 @@
+{
+  "node_modules/bootstrap/dist/css/bootstrap.min.css": "views/css/bootstrap.min.css",
+  "node_modules/bootstrap/dist/css/bootstrap.min.css.map": "views/css/bootstrap.min.css.map",
+  "node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff": "views/css/fonts/bootstrap-icons.woff",
+  "node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff2": "views/css/fonts/bootstrap-icons.woff2",
+  "node_modules/bootstrap-icons/font/bootstrap-icons.min.css": "views/css/bootstrap-icons.min.css"
+}

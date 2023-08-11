@@ -1,0 +1,10 @@
+{
+  "host": "127.0.0.1",
+  "reverseProxy": true,
+  "isSlave": false,
+  "logRotation": 259200,
+  "name": "ifconfig-server",
+  "port": 3000,
+  "statsPort": 3001,
+  "updateInterval": 86400
+}

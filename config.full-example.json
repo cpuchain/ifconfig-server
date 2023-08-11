@@ -1,0 +1,18 @@
+{
+  "rootDir": "",
+  "isSlave": false,
+  "licenseKey": "",
+  "port": 3000,
+  "statsPort": 3001,
+  "host": "127.0.0.1",
+  "reverseProxy": true,
+  "name": "ifconfig-server",
+  "donation": "",
+  "publicEndpoint": "",
+  "updateInterval": 86400,
+  "logFile": "",
+  "logRotation": 259200,
+  "proxy": "",
+  "tor": 9050,
+  "cloudflare": false
+}
