@@ -80,7 +80,7 @@ const initDir = (dir) => {
   }
 };
 
-const copyAsync = (srcFile, dstFile) => pipeline(fs.createReadStream(srcFile), fs.createWriteStream(dstFile)).then(() => sleep(0.2));
+const copyAsync = (srcFile, dstFile) => pipeline(fs.createReadStream(srcFile), fs.createWriteStream(dstFile));
 
 const initFile = async (srcFile, dstFile) => {
   if (!fs.existsSync(dstFile)) {
