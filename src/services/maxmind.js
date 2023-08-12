@@ -7,14 +7,15 @@ const execAsync = util.promisify(require('child_process').exec);
 const tar = require('tar');
 const commandExists = require('command-exists').sync;
 const fetch = require('../libs/fetch');
-const { getDBPath, getTarPath } = require('./filesystem');
+const { getDBRoot, getDBPath, getTarPath } = require('./filesystem');
 const { consoleLog, consoleError } = require('../libs/log');
+const { sleep } = require('../libs');
 
 const isTarAvailable = commandExists('tar');
 
 /**
  * Lookup function
- * 
+ *
  * return example:
  * console.log(lookup('8.8.8.8'));
  * {
@@ -156,6 +157,7 @@ const download = async (database) => {
   const TAR_PATHS = getTarPath();
 
   const dbName = edition + '.mmdb';
+  const dbNameDigest = path.join(getDBRoot(), dbName + '.sha256');
 
   const { digest, fileName, updated } = await downloadSha(database);
   const dbFile = path.join(fileName.split('.')[0], dbName);
@@ -176,9 +178,12 @@ const download = async (database) => {
   if (isTarAvailable) {
     await execAsync(`tar -xf ${fileName}`);
   } else {
+    consoleLog('Warning: TAR is not installed on system, it is recommended to use the system installed TAR while updating the DB!');
     await tar.x({
       file: fileName
     });
+    // Sleep for 1 second to wait until the inflation is finished
+    await sleep(1);
   }
 
   if (!fs.existsSync(dbFile)) {
@@ -191,6 +196,7 @@ const download = async (database) => {
   await fsPromises.rm(fileName);
   await fsPromises.rm(fileName.split('.')[0], { recursive: true, force: true });
   await fsPromises.writeFile(DB_PATHS[`${database}_sha256`], digest);
+  await fsPromises.writeFile(dbNameDigest, await getShaDigest(new Uint8Array(await fsPromises.readFile(DB_PATHS[database]))));
 
   if (updated > lastUpdated) {
     lastUpdated = `${updated}`;

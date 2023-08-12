@@ -16,11 +16,11 @@ const getDBPath = () => {
 
   return {
     country: path.join(DB_ROOT, './GeoLite2-Country.mmdb'),
-    country_sha256: path.join(DB_ROOT, './GeoLite2-Country.sha256'),
+    country_sha256: path.join(DB_ROOT, './GeoLite2-Country.tar.gz.sha256'),
     city: path.join(DB_ROOT, './GeoLite2-City.mmdb'),
-    city_sha256: path.join(DB_ROOT, './GeoLite2-City.sha256'),
+    city_sha256: path.join(DB_ROOT, './GeoLite2-City.tar.gz.sha256'),
     asn: path.join(DB_ROOT, './GeoLite2-ASN.mmdb'),
-    asn_sha256: path.join(DB_ROOT, './GeoLite2-ASN.sha256'),
+    asn_sha256: path.join(DB_ROOT, './GeoLite2-ASN.tar.gz.sha256'),
     lastUpdate: path.join(DB_ROOT, 'last_update.txt'),
     tor: path.join(DB_ROOT, './torlist.json'),
     bad_asn: path.join(DB_ROOT, './asnlist.json')
