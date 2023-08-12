@@ -118,7 +118,7 @@ const initDB = async () => {
     initFile(path.join(VIEWS_ROOT, f), path.join(DB_ROOT, f));
   }));
   initPort();
-  await sleep(2);
+  await sleep(5);
 };
 
 const openDB = async (DB_PATHS, dbName, isUpdate = false) => {
