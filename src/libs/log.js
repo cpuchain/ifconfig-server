@@ -2,6 +2,7 @@ const fetch = require('./fetch');
 const { formatTime } = require('./index');
 const fs = require('fs');
 const path = require('path');
+const { pipeline } = require('stream/promises');
 
 const consoleLog = (logContext) => {
   const logPath = globalThis.config.logFile;
@@ -22,12 +23,11 @@ const consoleLog = (logContext) => {
 const consoleError = (errorMessage, errorContext) => {
   const logPath = globalThis.config.logFile;
   let errString = `${formatTime()} Error: ${errorMessage}`;
-  
+
   if (errorContext) {
     errString += `\nError message: ${(
       errorContext instanceof Error && (errorContext.stack || errorContext.name)
-        ? (errorContext.stack ?? errorContext.name) 
-        : errorContext
+        ? (errorContext.stack ?? errorContext.name) : errorContext
     )}`;
   }
 
@@ -74,14 +74,9 @@ const rotateLog = () => {
   try {
     const parseLogPath = path.parse(logPath);
     const rotateName = path.join(parseLogPath.dir, `${parseLogPath.name}_${parseInt(new Date().getTime() / 1000)}${parseLogPath.ext}`);
-    
-    const readStream = fs.createReadStream(logPath);
-    const writeStream = fs.createWriteStream(rotateName);
-    
-    readStream
-      .pipe(writeStream)
-      .on('finish', clearLog)
-      .on('error', (e) => consoleError(`Error while writing to ${rotateName}`, e));
+
+    pipeline(fs.createReadStream(logPath), fs.createWriteStream(rotateName))
+      .catch(e => consoleError(`Error while writing to ${rotateName}`, e));
   } catch (e) {
     consoleError(`Error while rotating log file ${logPath}`, e);
   }

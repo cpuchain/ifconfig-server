@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const process = require('process');
 const os = require('os');
+const { pipeline } = require('stream/promises');
 const maxmind = require('maxmind');
 const { sleep } = require('../libs');
 const { consoleLog, consoleError } = require('../libs/log');
@@ -79,20 +80,13 @@ const initDir = (dir) => {
   }
 };
 
-const copyAsync = (srcFile, dstFile) => {
-  return new Promise((resolve, reject) => {
-    fs.createReadStream(srcFile)
-      .pipe(fs.createWriteStream(dstFile))
-      .on('finish', resolve)
-      .on('error', reject);
-  });
-};
+const copyAsync = (srcFile, dstFile) => pipeline(fs.createReadStream(srcFile), fs.createWriteStream(dstFile)).then(() => sleep(0.2));
 
 const initFile = async (srcFile, dstFile) => {
   if (!fs.existsSync(dstFile)) {
     try {
       consoleLog(`Initializing ${srcFile} db`);
-      
+
       await copyAsync(srcFile, dstFile);
     } catch (e) {
       consoleError(`Failed to initialize ${srcFile} db`, e);
@@ -124,6 +118,7 @@ const initDB = async () => {
     initFile(path.join(VIEWS_ROOT, f), path.join(DB_ROOT, f));
   }));
   initPort();
+  await sleep(2);
 };
 
 const openDB = async (DB_PATHS, dbName, isUpdate = false) => {
@@ -217,6 +212,7 @@ const checkDB = () => {
 };
 
 module.exports = {
+  copyAsync,
   getDBRoot,
   getDBPath,
   getTarPath,

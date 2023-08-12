@@ -7,7 +7,7 @@ const execAsync = util.promisify(require('child_process').exec);
 const tar = require('tar');
 const commandExists = require('command-exists').sync;
 const fetch = require('../libs/fetch');
-const { getDBRoot, getDBPath, getTarPath } = require('./filesystem');
+const { copyAsync, getDBRoot, getDBPath, getTarPath } = require('./filesystem');
 const { consoleLog, consoleError } = require('../libs/log');
 const { sleep } = require('../libs');
 
@@ -139,15 +139,6 @@ const downloadSha = async (database) => {
   };
 };
 
-const copyAsync = (srcFile, dstFile) => {
-  return new Promise((resolve, reject) => {
-    fs.createReadStream(srcFile)
-      .pipe(fs.createWriteStream(dstFile))
-      .on('finish', resolve)
-      .on('error', reject);
-  });
-};
-
 let lastUpdated;
 
 const download = async (database) => {
@@ -193,10 +184,11 @@ const download = async (database) => {
 
   await copyAsync(fileName, TAR_PATHS[database]);
   await copyAsync(dbFile, DB_PATHS[database]);
-  await fsPromises.rm(fileName);
-  await fsPromises.rm(fileName.split('.')[0], { recursive: true, force: true });
   await fsPromises.writeFile(DB_PATHS[`${database}_sha256`], digest);
   await fsPromises.writeFile(dbNameDigest, await getShaDigest(new Uint8Array(await fsPromises.readFile(DB_PATHS[database]))));
+  await sleep(2);
+  await fsPromises.rm(fileName);
+  await fsPromises.rm(fileName.split('.')[0], { recursive: true, force: true });
 
   if (updated > lastUpdated) {
     lastUpdated = `${updated}`;
