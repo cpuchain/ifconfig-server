@@ -47,7 +47,7 @@
     }
 
     @media (max-width: 768px) {
-      .cmd {
+      .cmd, .donation {
         display: none;
       }
     }
@@ -66,7 +66,7 @@
             You could try <em><a href="<%= public %>/?ip=" target="_blank" class="text-muted"><%= public %>/?ip=</a></em> query string to query other IP addresses.
           </p>
           <%if (donation) { %>
-            <p class="mb-2">
+            <p class="mb-2 donation">
               <em>Donation: <%= donation %></em>
             </p>
           <% } %>
