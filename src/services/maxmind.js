@@ -7,7 +7,7 @@ const execAsync = util.promisify(require('child_process').exec);
 const tar = require('tar');
 const commandExists = require('command-exists').sync;
 const fetch = require('../libs/fetch');
-const { copyAsync, getDBRoot, getDBPath, getTarPath } = require('./filesystem');
+const { getDBRoot, getDBPath, getTarPath } = require('./filesystem');
 const { consoleLog, consoleError } = require('../libs/log');
 const { sleep } = require('../libs');
 
@@ -182,8 +182,8 @@ const download = async (database) => {
     throw new Error(errStr);
   }
 
-  await copyAsync(fileName, TAR_PATHS[database]);
-  await copyAsync(dbFile, DB_PATHS[database]);
+  await fsPromises.copyFile(fileName, TAR_PATHS[database]);
+  await fsPromises.copyFile(dbFile, DB_PATHS[database]);
   await fsPromises.writeFile(DB_PATHS[`${database}_sha256`], digest);
   await fsPromises.writeFile(dbNameDigest, await getShaDigest(new Uint8Array(await fsPromises.readFile(DB_PATHS[database]))));
   await sleep(2);
@@ -204,13 +204,13 @@ const checkUpdate = async (database) => {
     const currentDigest = globalThis.db ? globalThis.db[`${edition}_sha256`]
       : fs.existsSync(DB_PATHS[`${database}_sha256`]) ? fs.readFileSync(DB_PATHS[`${database}_sha256`], { encoding: 'utf8' })
         : '';
-    
+
     const { digest } = await downloadSha(database);
-    
+
     if (digest === currentDigest) {
       return;
     }
-    
+
     await download(database);
   } catch (e) {
     consoleError(`Failed to update ${database} maxmind db`, e);
@@ -223,7 +223,7 @@ const updateDB = async () => {
     return;
   }
   lastUpdated = parseInt(
-    globalThis.db ? globalThis.db.lastUpdate 
+    globalThis.db ? globalThis.db.lastUpdate
       : fs.existsSync(DB_PATHS.lastUpdate) ? fs.readFileSync(DB_PATHS.lastUpdate, { encoding: 'utf8' })
         : 0
   );

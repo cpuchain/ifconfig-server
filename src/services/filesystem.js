@@ -1,8 +1,8 @@
 const fs = require('fs');
+const fsPromises = require('fs/promises');
 const path = require('path');
 const process = require('process');
 const os = require('os');
-const { pipeline } = require('stream/promises');
 const maxmind = require('maxmind');
 const { sleep } = require('../libs');
 const { consoleLog, consoleError } = require('../libs/log');
@@ -80,14 +80,12 @@ const initDir = (dir) => {
   }
 };
 
-const copyAsync = (srcFile, dstFile) => pipeline(fs.createReadStream(srcFile), fs.createWriteStream(dstFile));
-
 const initFile = async (srcFile, dstFile) => {
   if (!fs.existsSync(dstFile)) {
     try {
       consoleLog(`Initializing ${srcFile} db`);
 
-      await copyAsync(srcFile, dstFile);
+      await fsPromises.copyFile(srcFile, dstFile);
     } catch (e) {
       consoleError(`Failed to initialize ${srcFile} db`, e);
     }
@@ -212,7 +210,6 @@ const checkDB = () => {
 };
 
 module.exports = {
-  copyAsync,
   getDBRoot,
   getDBPath,
   getTarPath,

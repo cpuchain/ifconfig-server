@@ -2,7 +2,6 @@ const fetch = require('./fetch');
 const { formatTime } = require('./index');
 const fs = require('fs');
 const path = require('path');
-const { pipeline } = require('stream/promises');
 
 const consoleLog = (logContext) => {
   const logPath = globalThis.config.logFile;
@@ -71,15 +70,14 @@ const rotateLog = () => {
     return;
   }
 
-  try {
-    const parseLogPath = path.parse(logPath);
-    const rotateName = path.join(parseLogPath.dir, `${parseLogPath.name}_${parseInt(new Date().getTime() / 1000)}${parseLogPath.ext}`);
+  const parseLogPath = path.parse(logPath);
+  const rotateName = path.join(parseLogPath.dir, `${parseLogPath.name}_${parseInt(new Date().getTime() / 1000)}${parseLogPath.ext}`);
 
-    pipeline(fs.createReadStream(logPath), fs.createWriteStream(rotateName))
-      .catch(e => consoleError(`Error while writing to ${rotateName}`, e));
-  } catch (e) {
-    consoleError(`Error while rotating log file ${logPath}`, e);
-  }
+  fs.copyFile(logPath, rotateName, (err) => {
+    if (err) {
+      consoleError(`Error while rotating log file ${logPath}`, err);
+    }
+  });
 };
 
 module.exports = {

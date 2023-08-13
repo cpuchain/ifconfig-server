@@ -12,24 +12,28 @@ const syncFiles = () => {
   console.log('Sync started');
 
   Object.keys(config).forEach(src => {
-    const readStream = fs.createReadStream(path.join(process.cwd(), src));
+    const readFrom = path.join(process.cwd(), src);
 
     if (typeof config[src] === 'object' && Array.isArray(config[src])) {
       config[src].forEach(file => {
         const writeTo = path.join(process.cwd(), file);
 
-        const writeStream = fs.createWriteStream(writeTo);
-
-        readStream.pipe(writeStream);
+        fs.copyFile(readFrom, writeTo, (err) => {
+          if (err) {
+            throw err;
+          }
+        });
       });
       return;
     }
 
     const writeTo = path.join(process.cwd(), config[src]);
 
-    const writeStream = fs.createWriteStream(writeTo);
-
-    readStream.pipe(writeStream);
+    fs.copyFile(readFrom, writeTo, (err) => {
+      if (err) {
+        throw err;
+      }
+    });
   });
 
   console.log('Sync ends\n');
