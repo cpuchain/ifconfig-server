@@ -1,6 +1,6 @@
 {
   "name": "ifconfig-server",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Fast, scalable ip lookup service server implementation powered by fastify and maxmind",
   "main": "src/index.js",
   "bin": {
