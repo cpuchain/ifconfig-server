@@ -79,6 +79,16 @@ program
     'ifconfig-server'
   )
   .option(
+    '-desc, --description <DESCRIPTION>',
+    'Description to show on the frontend',
+    (arg1, arg2) => checkString(arg1, arg2, 'Description')
+  )
+  .option(
+    '-keywords, --keywords <KEYWORDS>',
+    'Keywords to show on the frontend',
+    (arg1, arg2) => checkString(arg1, arg2, 'Keywords')
+  )
+  .option(
     '-donate, --donation <DONATION>',
     'Add donation banner to the website',
     (arg1, arg2) => checkString(arg1, arg2, 'Name')

@@ -27,6 +27,19 @@
   },
   "funding": "https://github.com/ifconfigla/ifconfig-server/#donations",
   "license": "MIT",
+  "keywords": [
+    "maxmind",
+    "mmdb",
+    "geo",
+    "geoip",
+    "geoip2",
+    "geobase",
+    "timezone",
+    "asn",
+    "ip",
+    "ip lookup",
+    "geo lookup"
+  ],
   "files": [
     "src",
     "scripts",

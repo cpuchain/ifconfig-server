@@ -17,7 +17,7 @@ const updater = require('./services/update');
 const { addVisitor, clearVisitors } = require('./services/visitor');
 const { formatTime } = require('./libs');
 const { consoleLog, consoleError, rotateLog } = require('./libs/log');
-const { name: defaultName, version, homepage } = require('../package.json');
+const { name: defaultName, version, homepage, description: defaultDescription, keywords: defaultKeywords } = require('../package.json');
 
 /**
  * Global objects here
@@ -158,7 +158,7 @@ const importStats = () => {
   if (!fs.existsSync(statsPath)) {
     return;
   }
-  
+
   try {
     const localStats = JSON.parse(fs.readFileSync(statsPath, { encoding: 'utf8' }));
     let useLocalStats = true;
@@ -267,6 +267,8 @@ const Ifconfig = async () => {
 
     return reply.view('./index.html', {
       name: globalThis.config.name,
+      description: globalThis.config.description || defaultDescription,
+      keywords: globalThis.config.keywords || defaultKeywords.join(', '),
       defaultName,
       version,
       homepage,
