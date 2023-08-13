@@ -202,6 +202,9 @@ const Ifconfig = async () => {
   if (!globalThis.config.publicEndpoint) {
     globalThis.config.publicEndpoint = `http://${globalThis.config.host ?? 'localhost'}:${globalThis.config.port}`;
   }
+  if (!globalThis.config.name) {
+    globalThis.config.name = defaultName;
+  }
 
   checkDB();
   importStats();
@@ -256,14 +259,14 @@ const Ifconfig = async () => {
     if (CLI_USERAGENT.includes(userAgent)) {
       return reply.send(lookupString(req) ?? 'unknown');
     }
-    
+
     // If header includes Accept: application/json return json object
     if (req.headers?.accept.includes('application/json')) {
       return reply.send(lookup(req));
     }
 
     return reply.view('./index.html', {
-      name: globalThis.config.name || defaultName,
+      name: globalThis.config.name,
       defaultName,
       version,
       homepage,

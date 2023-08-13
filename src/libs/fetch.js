@@ -27,12 +27,15 @@ const getProxyAgent = (url, retry = 0) => {
     }
     return new HttpProxyAgent(config.proxy);
   }
-}; 
+};
 
 const fetchFunc = async (url, fetchOptions = {}) => {
   const config = globalThis.config;
 
-  const MAX_RETRY = config?.MAX_RETRY ?? (config?.proxy || config?.torPort) ? 5 : 0;
+  const useProxy = config?.proxy || config?.torPort;
+  const userAgent = config?.userAgent ?? useProxy ? USER_AGENT : config?.name;
+
+  const MAX_RETRY = fetchOptions?.maxRetry ?? config?.maxRetry ?? useProxy ? 5 : 0;
 
   let retry = 0;
   let errorObject;
@@ -46,13 +49,13 @@ const fetchFunc = async (url, fetchOptions = {}) => {
   }
 
   if (!fetchOptions.headers['User-Agent']) {
-    fetchOptions.headers['User-Agent'] = USER_AGENT;
+    fetchOptions.headers['User-Agent'] = userAgent;
   }
 
   while (retry < MAX_RETRY + 1) {
     const controller = new AbortController();
     let timeout;
-        
+
     fetchOptions.signal = controller.signal;
 
     // Config timeout in seconds
@@ -62,13 +65,13 @@ const fetchFunc = async (url, fetchOptions = {}) => {
       }, config.timeout * 1000);
     }
 
-    if (config?.proxy || config?.torPort) {
+    if (useProxy) {
       fetchOptions.agent = getProxyAgent(url, retry);
     }
 
     try {
       const resp = await fetch(url, fetchOptions);
-            
+
       if (!resp.ok) {
         const errMsg = `Request to ${url} failed with error code ${resp.status}:\n`
                   + await resp.text();

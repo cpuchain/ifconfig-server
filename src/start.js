@@ -116,6 +116,15 @@ program
     checkInt
   )
   .option(
+    '-retry, --max-retry <MAX_RETRY>',
+    'Count to retry failed http requests'
+  )
+  .option(
+    '-user-agent, --user-agent <USER_AGENT>',
+    'User agent to use for http requests',
+    (arg1, arg2) => checkString(arg1, arg2, 'User Agent')
+  )
+  .option(
     '-cloudflare, --cloudflare',
     'Enable this option if you host the site behind cloudflare'
   )

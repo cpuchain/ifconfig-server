@@ -13,6 +13,8 @@
   "logFile": "",
   "logRotation": 259200,
   "proxy": "",
-  "tor": 9050,
+  "torPort": 9050,
+  "maxRetry": 5,
+  "userAgent": "ifconfig-server",
   "cloudflare": false
 }

@@ -77,12 +77,12 @@ const rotateLog = () => {
     if (err) {
       consoleError(`Error while rotating log file ${logPath}`, err);
     }
+    clearLog();
   });
 };
 
 module.exports = {
   consoleLog,
   consoleError,
-  clearLog,
   rotateLog
 };
