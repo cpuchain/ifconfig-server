@@ -125,7 +125,7 @@ const openDB = async (DB_PATHS, dbName, isUpdate = false) => {
   try {
     if (isUpdate) {
       // Sleep for 5 seconds to wait until file changes settle
-      await sleep(5);
+      await sleep(10);
     }
 
     // Update MaxMind DB
@@ -170,9 +170,9 @@ const memDB = async () => {
 
     fs.watch(DB_PATHS[dbName], () => {
       if (!fsTimeout) {
-        setTimeout(() => openDB(DB_PATHS, dbName, true), 1000);
-        // give 10 seconds for multiple events
-        fsTimeout = setTimeout(() => { fsTimeout = null; }, 10000);
+        openDB(DB_PATHS, dbName, true);
+        // give 20 seconds for multiple events
+        fsTimeout = setTimeout(() => { fsTimeout = null; }, 20000);
       }
     });
   });

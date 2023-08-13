@@ -33,8 +33,8 @@ const checkString = (value, dummyPrevious, param, stringLength = 0) => {
 
 program
   .name(name)
-  .description(description)
-  .version(version)
+  .description(`${name} ${version} (Node ${process.version})\n\n` + description)
+  .version(`${name} ${version} (Node ${process.version})`)
   .option(
     '-c, --config-file <CONFIG_FILE>',
     'JSON config file to use the server',
