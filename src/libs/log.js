@@ -56,7 +56,7 @@ const clearLog = () => {
     return;
   }
 
-  fs.truncate(logPath, (err) => {
+  fs.truncate(logPath, 0, (err) => {
     if (err) {
       console.log(`${formatTime()} Error while truncate the log file\n${(err instanceof Error ? err.message : err)}`);
     }

@@ -200,8 +200,7 @@ const download = async (database) => {
 const checkUpdate = async (database) => {
   try {
     const DB_PATHS = getDBPath();
-    const edition = edition_id[database];
-    const currentDigest = globalThis.db ? globalThis.db[`${edition}_sha256`]
+    const currentDigest = globalThis.db ? globalThis.db[`${database}_sha256`]
       : fs.existsSync(DB_PATHS[`${database}_sha256`]) ? fs.readFileSync(DB_PATHS[`${database}_sha256`], { encoding: 'utf8' })
         : '';
 
