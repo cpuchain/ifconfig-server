@@ -7,7 +7,9 @@ const pubKey = process.argv[2];
 
 const githubUrl = github ?? homepage.replace('https://github.com/', '');
 
-const digest = fs.readFileSync('./dist/SHA256SUMS', { encoding: 'utf8' });
+const digest = fs.existsSync('./dist/SHA256SUMS.asc')
+               ? fs.readFileSync('./dist/SHA256SUMS.asc', { encoding: 'utf8' })
+                 : fs.readFileSync('./dist/SHA256SUMS', { encoding: 'utf8' });
 
 const releaseNoteString = `
 ![GitHub Release)](https://img.shields.io/github/downloads/${githubUrl}/v${version}/total?color=blue&style=flat-square)
@@ -19,7 +21,7 @@ ${description}
 Simple one liner install for linux
 
 \`\`\`bash
-wget -qO- https://github.com/${githubUrl}/releases/download/v${version}/${name}-${version}-x86_64-linux.tar.gz | tar xvz && \
+wget -qO- https://github.com/${githubUrl}/releases/download/v${version}/${name}-${version}-x86_64-linux.tar.gz | tar xvz && \\
 sudo mv ${name} /usr/local/bin
 \`\`\`
 
