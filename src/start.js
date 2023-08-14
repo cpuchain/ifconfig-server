@@ -89,6 +89,11 @@ program
     (arg1, arg2) => checkString(arg1, arg2, 'Keywords')
   )
   .option(
+    '-google, --google-verification <GOOGLE_VERIFICATION>',
+    'Verification code for google search console',
+    (arg1, arg2) => checkString(arg1, arg2, 'Google Verification')
+  )
+  .option(
     '-donate, --donation <DONATION>',
     'Add donation banner to the website',
     (arg1, arg2) => checkString(arg1, arg2, 'Name')

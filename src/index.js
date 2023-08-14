@@ -269,6 +269,7 @@ const Ifconfig = async () => {
       name: globalThis.config.name,
       description: globalThis.config.description || defaultDescription,
       keywords: globalThis.config.keywords || defaultKeywords.join(', '),
+      googleVerification: globalThis.config.googleVerification,
       defaultName,
       version,
       homepage,
