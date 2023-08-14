@@ -15,10 +15,15 @@ mv ${PACKAGE_NAME}-linux ${PACKAGE_NAME} && tar -czvf ${PACKAGE_NAME}-${PACKAGE_
 mv ${PACKAGE_NAME}-macos ${PACKAGE_NAME} && tar -czvf ${PACKAGE_NAME}-${PACKAGE_VERSION}-x86_64-darwin.tar.gz ${PACKAGE_NAME} && rm ${PACKAGE_NAME}
 mv ${PACKAGE_NAME}-win.exe ${PACKAGE_NAME}.exe && zip ${PACKAGE_NAME}-${PACKAGE_VERSION}-x86_64-win.zip ${PACKAGE_NAME}.exe && rm ${PACKAGE_NAME}.exe
 sha256sum * > SHA256SUMS
-gpg --clear-sign SHA256SUMS
-rm SHA256SUMS
-cd -;
-zip -r ${PACKAGE_NAME}-${PACKAGE_VERSION}-dist.zip dist
+
+if [[ ! -v GITHUB_ACTIONS ]]; then
+  gpg --clear-sign SHA256SUMS
+  rm SHA256SUMS
+  cd -;
+  zip -r ${PACKAGE_NAME}-${PACKAGE_VERSION}-dist.zip dist
+else
+  cd -;
+fi
 
 # Create release note
 ./scripts/release-note.js ${PUB_KEY}
