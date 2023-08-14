@@ -8,7 +8,7 @@ PUB_KEY="ifconfig-dev.asc"
 nzip -p && mv ${PACKAGE_NAME}.zip dist/${PACKAGE_NAME}-${PACKAGE_VERSION}-src.zip
 cp ${PUB_KEY} dist
 cd dist
-rm SHA256SUMS.asc
+rm SHA256SUMS SHA256SUMS.asc
 chmod +x ${PACKAGE_NAME}-linux
 chmod +x ${PACKAGE_NAME}-macos
 mv ${PACKAGE_NAME}-linux ${PACKAGE_NAME} && tar -czvf ${PACKAGE_NAME}-${PACKAGE_VERSION}-x86_64-linux.tar.gz ${PACKAGE_NAME} && rm ${PACKAGE_NAME}
@@ -18,7 +18,6 @@ sha256sum * > SHA256SUMS
 
 if [[ ! -v GITHUB_ACTIONS ]]; then
   gpg --clear-sign SHA256SUMS
-  rm SHA256SUMS
   cd -;
   zip -r ${PACKAGE_NAME}-${PACKAGE_VERSION}-dist.zip dist
 else

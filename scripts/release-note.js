@@ -7,6 +7,8 @@ const pubKey = process.argv[2];
 
 const githubUrl = github ?? homepage.replace('https://github.com/', '');
 
+const digest = fs.readFileSync('./dist/SHA256SUMS', { encoding: 'utf8' });
+
 const releaseNoteString = `
 ![GitHub Release)](https://img.shields.io/github/downloads/${githubUrl}/v${version}/total?color=blue&style=flat-square)
 
@@ -25,6 +27,12 @@ Check with the following command
 
 \`\`\`bash
 ${name} --help
+\`\`\`
+
+### SHA256SUMS
+
+\`\`\`
+${digest}
 \`\`\`
 
 ### How to verify
