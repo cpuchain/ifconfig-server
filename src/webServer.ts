@@ -29,14 +29,47 @@ const ipQueryString = {
     },
 };
 
-const ipQueryArray = {
+/**
+ * ["9.9.9.9"] or [{"ip": "9.9.9.9"}] or {"ip": "9.9.9.9"}
+ */
+const ipQueryPost = {
     body: {
-        type: 'array',
-        maxItems: 1000,
-        items: {
-            type: 'string',
-            isIP: true,
-        },
+        oneOf: [
+            {
+                type: 'array',
+                minItems: 1,
+                maxItems: 1000,
+                items: {
+                    type: 'string',
+                    isIP: true,
+                },
+            },
+            {
+                type: 'array',
+                minItems: 1,
+                maxItems: 1000,
+                items: {
+                    type: 'object',
+                    properties: {
+                        ip: {
+                            type: 'string',
+                            isIP: true,
+                        },
+                    },
+                    required: ['ip'],
+                },
+            },
+            {
+                type: 'object',
+                properties: {
+                    ip: {
+                        type: 'string',
+                        isIP: true,
+                    },
+                },
+                required: ['ip'],
+            },
+        ],
     },
 };
 
@@ -185,10 +218,32 @@ function listenServer(server: WebServer) {
         }
     }
 
-    async function ipJsonArray(req: FastifyRequest, reply: FastifyReply) {
+    async function ipJsonPost(req: FastifyRequest, reply: FastifyReply) {
         try {
             // Body validated by ajv
-            const ipBody = req.body as unknown as Array<string>;
+
+            // Handle object requests
+            if (!Array.isArray(req.body)) {
+                const requestIP = (req.body as unknown as { ip: string }).ip;
+                const ipResult = await reader.read(requestIP);
+                // Format output as more readable
+                reply
+                    .header('Content-Type', 'application/json; charset=utf-8')
+                    .send(JSON.stringify(ipResult, null, 2));
+                return;
+            }
+
+            // Handle array requests
+            const ipBody = (
+                req.body as unknown as Array<string | { ip: string }>
+            ).map((body) => {
+                if (typeof body === 'string') {
+                    return body;
+                } else if (typeof body === 'object' && body.ip) {
+                    return body.ip;
+                }
+                throw new Error('Not supported type');
+            });
             const ipResult = await Promise.all(
                 ipBody.map((ip) => reader.read(ip)),
             );
@@ -322,9 +377,9 @@ function listenServer(server: WebServer) {
         ipJson(req, reply);
     });
 
-    app.post('/json', { schema: ipQueryArray }, (req, reply) => {
+    app.post('/json', { schema: ipQueryPost }, (req, reply) => {
         addVisitor(req.ip);
-        ipJsonArray(req, reply);
+        ipJsonPost(req, reply);
     });
 
     app.get('/text', { schema: ipQueryString }, (req, reply) => {
