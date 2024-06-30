@@ -9,10 +9,6 @@ import Stats from './stats';
 import WebServer from './webServer';
 import Updater from './updater';
 
-const config = configFactory();
-const logger = LoggerFactory(config);
-const stats = new Stats(config);
-
 if (cluster.isWorker) {
     const config = JSON.parse(process.env.config as string) as Config;
     const forkId = Number(process.env.forkId);
@@ -23,6 +19,10 @@ if (cluster.isWorker) {
             break;
     }
 }
+
+const config = configFactory();
+const logger = LoggerFactory(config);
+const stats = new Stats(config);
 
 function createServerWorker(forkId: number) {
     const worker = cluster.fork({
