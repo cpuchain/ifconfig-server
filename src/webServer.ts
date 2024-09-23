@@ -1,6 +1,7 @@
 import process from 'process';
 import path from 'path';
 import net from 'net';
+import { webcrypto as crypto } from 'crypto';
 import {
     fastify,
     FastifyInstance,
@@ -154,33 +155,36 @@ function resultToString(ipResult: IPExtended) {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type OriginCallback = (err: Error | null, origin: any) => void;
 
+interface StatsPromise {
+    uuid: string;
+    resolve: (msg: SeralizedStats) => void;
+    reject: (err: Error) => void;
+    resolved: boolean;
+}
+
 function listenServer(server: WebServer) {
     const { logger, config, app, reader } = server;
-
-    let statsPromise: {
-        resolve: (msg: SeralizedStats) => void;
-        reject: (err: Error) => void;
-    } | null = null;
+    let { statsQueue } = server;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     process.on('message', (msg: any) => {
-        switch (msg.type) {
-            case 'getStats':
-                if (statsPromise) {
-                    // Deep clone object
-                    const msgJson = JSON.parse(JSON.stringify(msg));
-                    delete msgJson.type;
-                    statsPromise.resolve(msgJson as SeralizedStats);
-                    statsPromise = null;
-                }
-                break;
-            default:
-                if (statsPromise) {
-                    statsPromise.reject(new Error('Did not received a reply'));
-                    statsPromise = null;
-                }
-                break;
+        const queue = statsQueue.find((q) => q.uuid === msg.uuid);
+
+        if (!queue) {
+            return;
         }
+
+        if (msg.error) {
+            queue.reject(new Error(msg.error));
+        } else {
+            const msgJson = JSON.parse(JSON.stringify(msg));
+            delete msgJson.uuid;
+            queue.resolve(msgJson as SeralizedStats);
+        }
+
+        queue.resolved = true;
+
+        statsQueue = statsQueue.filter((q) => !q.resolved);
     });
 
     function getStats(): Promise<SeralizedStats> {
@@ -189,12 +193,20 @@ function listenServer(server: WebServer) {
                 reject(new Error('Not cluster'));
                 return;
             }
-            process.send({ type: 'getStats' });
 
-            statsPromise = {
+            const uuid = crypto.randomUUID();
+
+            process.send({
+                uuid,
+                type: 'getStats',
+            });
+
+            statsQueue.push({
+                uuid,
                 resolve,
                 reject,
-            };
+                resolved: false,
+            });
         });
     }
 
@@ -454,6 +466,8 @@ export default class WebServer {
     app: FastifyInstance;
     reader: Reader;
 
+    statsQueue: StatsPromise[];
+
     constructor(config: Config, forkId: number = 0) {
         this.config = config;
         this.logSystem = 'Website';
@@ -486,6 +500,7 @@ export default class WebServer {
 
         this.app = app;
         this.reader = reader;
+        this.statsQueue = [];
 
         listenServer(this);
     }

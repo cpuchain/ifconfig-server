@@ -47,7 +47,11 @@ function createServerWorker(forkId: number) {
                     stats.addVisitor(msg.ip);
                     break;
                 case 'getStats':
-                    worker.send({ type: 'getStats', ...stats.serialize() });
+                    worker.send({
+                        uuid: msg.uuid,
+                        type: 'getStats',
+                        ...stats.serialize(),
+                    });
                     break;
             }
         });
