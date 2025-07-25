@@ -1,0 +1,11 @@
+services:
+  ifconfig:
+    container_name: ifconfig
+    image: ghcr.io/cpuchain/ifconfig:1.1.2
+    restart: always
+    env_file:
+      - ./.env
+    volumes:
+      - './data:/app/data'
+    ports:
+      - '127.0.0.1:3000:3000'

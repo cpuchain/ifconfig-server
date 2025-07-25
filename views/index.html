@@ -1,239 +1,234 @@
 <!doctype html>
 <html lang="en" data-bs-theme="auto">
-  <head>
-    <meta charset="utf-8">
-    <title>What is my IP address? — <%= name %></title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="<%= name %> • What is my IP address? — <%= description %>">
-    <meta name="keywords" content="<%= keywords %>">
-    <%if (googleVerification) { %>
-      <meta name="google-site-verification" content="<%= googleVerification %>" />
-    <% } %>
-    <link rel="canonical" href="<%= public %>">
-    <link href="./css/bootstrap.min.css" rel="stylesheet">
-    <link href="./css/bootstrap-icons.embedded.css" rel="stylesheet">
-    <style>
-    @media (min-width: 1200px) {
-      .container {
-        width: 1100px;
-      }
-    }
-    h1, .h1 {
-      font-size: 36px;
-    }
-    .ip {
-      border: 1px solid #cbcbcb;
-      background: #f2f2f2;
-      font-size: 36px;
-      padding: 6px;
-      word-wrap: break-word;
-      color: #000 !important;
-    }
+    <head>
+        <meta charset="utf-8">
+        <title>What is my IP address? — <%= name %></title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="<%= name %> • What is my IP address? — <%= description %>">
+        <meta name="keywords" content="<%= keywords %>">
+        <%if (googleVerification) { %>
+            <meta name="google-site-verification" content="<%= googleVerification %>" />
+        <% } %>
+        <link rel="canonical" href="<%= public %>">
+        <link href="./css/bootstrap.min.css" rel="stylesheet">
+        <link href="./css/bootstrap-icons.min.css" rel="stylesheet">
+        <style>
+        @media (min-width: 1200px) {
+            .container {
+                width: 1100px;
+            }
+        }
+        h1, .h1 {
+            font-size: 36px;
+        }
+        .ip {
+            border: 1px solid #cbcbcb;
+            background: #f2f2f2;
+            font-size: 36px;
+            padding: 6px;
+            word-wrap: break-word;
+            color: #000 !important;
+        }
 
-    .info-table td,
-    .info-table th {
-      padding: 5px;
-      border: 2px solid #ababab;
-      word-wrap: break-word;
-      max-width: 400px;
-    }
-    
-    .info-table th[scope="row"] {
-      background-color: #d5d5d5;
-      text-align: left;
-    }
+        .info-table td,
+        .info-table th {
+            padding: 5px;
+            border: 2px solid #ababab;
+            word-wrap: break-word;
+            max-width: 400px;
+        }
+        
+        .info-table th[scope="row"] {
+            background-color: #d5d5d5;
+            text-align: left;
+        }
 
-    .cmd {
-      padding-left: 10px !important;
-    }
+        .cmd {
+            padding-left: 10px !important;
+        }
 
-    .footerlink {
-      display: inline;
-      padding: 0rem !important;
-    }
+        .footerlink {
+            display: inline;
+            padding: 0rem !important;
+        }
 
-    @media (max-width: 768px) {
-      .cmd, .donation {
-        display: none;
-      }
-    }
-    </style>
-  </head>
-  <body>
-    <div class="container text-center">
-      <div class="row">
-        <div class="col text-start">
-          <h2 class="mt-3 mb-3"><%= name %> — What is my IP address?</h2>
-          <p><code class="ip mt-3 mb-3"><%= lookup.ip %></code></p>
-          <p class="mb-2">
-            To force JSON output simply add <em>Accept: application/json</em> header or try <em><a href="<%= public %>/json" target="_blank" class="text-muted"><%= public %>/json</a></em> endpoint
-          </p>
-          <p class="mb-2">
-            You could try <em><a href="<%= public %>/?ip=" target="_blank" class="text-muted"><%= public %>/?ip=</a></em> query string to query other IP addresses.
-          </p>
-          <%if (donation) { %>
-            <p class="mb-2 donation">
-              <em>Donation: <%= donation %></em>
-            </p>
-          <% } %>
+        @media (max-width: 768px) {
+            .cmd, .donation {
+                display: none;
+            }
+        }
+        </style>
+    </head>
+    <body>
+        <div class="container text-center">
+            <div class="row">
+                <div class="col text-start">
+                    <h2 class="mt-3 mb-3"><%= name %> — What is my IP address?</h2>
+                    <p><code class="ip mt-3 mb-3"><%= lookup.ip %></code></p>
+                    <p class="mb-2">
+                        To force JSON output simply add <em>Accept: application/json</em> header or try <em><a href="<%= public %>/json" target="_blank" class="text-muted"><%= public %>/json</a></em> endpoint
+                    </p>
+                    <p class="mb-2">
+                        You could try <em><a href="<%= public %>/?ip=" target="_blank" class="text-muted"><%= public %>/?ip=</a></em> query string to query other IP addresses.
+                    </p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col text-start">
+                    <h3 class="mt-3 mb-3">What do we know about this IP address?</h3>
+                    <table class="info-table">
+                        <tbody>
+                        <%if (lookup.ip) { %>
+                            <tr>
+                                <th class="col-1" scope="row">IP&nbsp;address</th>
+                                <td class="col-3"><%= lookup.ip %></td>
+                                <td class="col-4 cmd">$ curl <a href="<%= public %>/ip" target="_blank" class="text-muted"><%= public %>/ip</a></td>
+                            </tr>
+                        <% } %>
+                        <%if (lookup.country) { %>
+                            <tr>
+                                <th class="col-1" scope="row">Country</th>
+                                <td class="col-3"><%= lookup.country %></td>
+                                <td class="col-4 cmd">$ curl <a href="<%= public %>/country<%= queryString %>" target="_blank" class="text-muted"><%= public %>/country<%= queryString %></a></td>
+                            </tr>
+                            <tr>
+                                <th class="col-1" scope="row">Country (ISO code)</th>
+                                <td class="col-3"><%= lookup.country_iso %></td>
+                                <td class="col-4 cmd">$ curl <a href="<%= public %>/country-iso<%= queryString %>" target="_blank" class="text-muted"><%= public %>/country-iso<%= queryString %></a></td>
+                            </tr>
+                            <tr>
+                                <th class="col-1" scope="row">In EU?</th>
+                                <td class="col-3"><%= lookup.country_eu %></td>
+                                <td class="col-4 cmd"></td>
+                            </tr>
+                        <% } %>
+                        <%if (lookup.registered_country) { %>
+                            <tr>
+                                <th class="col-1" scope="row">Registered Country</th>
+                                <td class="col-3"><%= lookup.registered_country %></td>
+                                <td class="col-4 cmd"></td>
+                            </tr>
+                        <% } %>
+                        <%if (lookup.city) { %>
+                            <tr>
+                                <th class="col-1" scope="row">City</th>
+                                <td class="col-3"><%= lookup.city %></td>
+                                <td class="col-4 cmd">$ curl <a href="<%= public %>/city<%= queryString %>" target="_blank" class="text-muted"><%= public %>/city<%= queryString %></a></td>
+                            </tr>
+                        <% } %>
+                        <%if (lookup.latitude) { %>
+                            <tr>
+                                <th class="col-1" scope="row">Latitude</th>
+                                <td class="col-3"><%= lookup.latitude %></td>
+                                <td class="col-4 cmd"></td>
+                            </tr>
+                        <% } %>
+                        <%if (lookup.longitude) { %>
+                            <tr>
+                                <th class="col-1" scope="row">Longitude</th>
+                                <td class="col-3"><%= lookup.longitude %></td>
+                                <td class="col-4 cmd"></td>
+                            </tr>
+                        <% } %>
+                        <%if (lookup.time_zone) { %>
+                            <tr>
+                                <th class="col-1" scope="row">Timezone</th>
+                                <td class="col-3"><%= lookup.time_zone %></td>
+                                <td class="col-4 cmd"></td>
+                            </tr>
+                        <% } %>
+                        <%if (lookup.asn) { %>
+                            <tr>
+                                <th class="col-1" scope="row">ASN</th>
+                                <td class="col-3"><%= lookup.asn %></td>
+                                <td class="col-4 cmd">$ curl <a href="<%= public %>/asn<%= queryString %>" target="_blank" class="text-muted"><%= public %>/asn<%= queryString %></a></td>
+                            </tr>
+                            <tr>
+                                <th class="col-1" scope="row">ASN (organization)</th>
+                                <td class="col-3"><%= lookup.asn_org %></td>
+                                <td class="col-4 cmd">$ curl <a href="<%= public %>/asn-org<%= queryString %>" target="_blank" class="text-muted"><%= public %>/asn-org<%= queryString %></a></td>
+                            </tr>
+                        <% } %>
+                        <tr>
+                            <th class="col-1" scope="row">Is Tor?</th>
+                            <td class="col-3"><%= lookup.tor %></td>
+                            <td class="col-4 cmd">$ curl <a href="<%= public %>/tor<%= queryString %>" target="_blank" class="text-muted"><%= public %>/tor<%= queryString %></a></td>
+                        </tr>
+                        <tr>
+                            <th class="col-1" scope="row">Is Bad ASN?</th>
+                            <td class="col-3"><%= lookup.bad_asn %></td>
+                            <td class="col-4 cmd">$ curl <a href="<%= public %>/bad_asn<%= queryString %>" target="_blank" class="text-muted"><%= public %>/bad_asn<%= queryString %></a></td>
+                        </tr>
+                        <%if (lookup.user_agent) { %>
+                            <tr>
+                                <th class="col-1" scope="row">User&nbsp;agent</th>
+                                <td class="col-3"><%= (`${lookup.user_agent.product}/${lookup.user_agent.version}`) %></td>
+                                <td class="col-4 cmd"></td>
+                            </tr>
+                             
+                            <tr>
+                                <th class="col-1" scope="row">User&nbsp;agent: Comment</th>
+                                <td class="col-3"><%= lookup.user_agent.comment %></td>
+                                <td class="col-4 cmd"></td>
+                            </tr>
+                             
+                            <tr>
+                                <th class="col-1" scope="row">User&nbsp;agent: Raw</th>
+                                <td class="col-3"><%= lookup.user_agent.raw_value %></td>
+                                <td class="col-4 cmd"></td>
+                            </tr>
+                        <% } %>
+                        <%if (text) { %>
+                            <tr>
+                                <th class="col-1" scope="row">Text</th>
+                                <td class="col-3"><%= text %></td>
+                                <td class="col-4 cmd">$ curl <a href="<%= public %>/text<%= queryString %>" target="_blank" class="text-muted"><%= public %>/text<%= queryString %></a></td>
+                            </tr>
+                        <% } %>
+                        <%if (json) { %>
+                            <tr>
+                                <th class="col-1" scope="row">JSON</th>
+                                <td class="col-3"><%= json %></td>
+                                <td class="col-4 cmd">$ curl <a href="<%= public %>/json<%= queryString %>" target="_blank" class="text-muted"><%= public %>/json<%= queryString %></a></td>
+                            </tr>
+                        <% } %>
+                        <%if (stats) { %>
+                            <tr>
+                                <th class="col-1" scope="row">Stats</th>
+                                <td class="col-3"><%= stats %></td>
+                                <td class="col-4 cmd">$ curl <a href="<%= public %>/stats" target="_blank" class="text-muted"><%= public %>/stats</a></td>
+                            </tr>
+                        <% } %>
+                    </tbody></table>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col text-start mt-4">
+                    <p>
+                        <em>By using this service and the source code you agree to the
+                            <a href="https://www.maxmind.com/en/geolite2/eula" target="_blank" rel="noreferrer nofollow" class="text-muted">MaxMind's GeoLite2 End User License Agreement</a>.
+                            We never collect or store any raw log of visitor's identifiable information.
+                            <a href="https://noscript.net/" target="_blank" rel="noreferrer nofollow" class="text-muted">This page doesn't require javascript to be enabled by a visitor.</a>
+                            <%if (noCloudflare) { %>
+                                <a href="http://crimeflare.eu.org/" target="_blank" rel="noreferrer nofollow" class="text-muted">This site is hosted from cloudflare-free environment.</a>
+                            <% } %>
+                        </em>
+                    </p>
+                </div>
+            </div>
+            <!-- Footer -->
+            <footer class="d-flex flex-wrap justify-content-between align-items-center pt-3 mt-4 mb-4 border-top">
+                <ul class="nav">
+                    <li class="nav-item text-muted">
+                        Powered by
+                        <a href="<%= homepage %>" target="_blank" rel="noreferrer nofollow" class="nav-link px-2 text-muted footerlink"><%= defaultName %></a>
+                        & 
+                        <a href="https://dev.maxmind.com/geoip/geolite2-free-geolocation-data" target="_blank" rel="noreferrer nofollow" class="nav-link px-2 text-muted footerlink">MaxMind GeoLite2 DB</a>
+                    </li>
+                </ul>
+
+                <p class="mb-0 text-muted justify-content-end"><%= version %> (DB Version: <%= dbVersion %>)</p>
+            </footer>
         </div>
-      </div>
-      <div class="row">
-        <div class="col text-start">
-          <h3 class="mt-3 mb-3">What do we know about this IP address?</h3>
-          <table class="info-table">
-            <tbody>
-            <%if (lookup.ip) { %>
-              <tr>
-                <th class="col-1" scope="row">IP&nbsp;address</th>
-                <td class="col-3"><%= lookup.ip %></td>
-                <td class="col-4 cmd">$ curl <a href="<%= public %>/ip" target="_blank" class="text-muted"><%= public %>/ip</a></td>
-              </tr>
-            <% } %>
-            <%if (lookup.country) { %>
-              <tr>
-                <th class="col-1" scope="row">Country</th>
-                <td class="col-3"><%= lookup.country %></td>
-                <td class="col-4 cmd">$ curl <a href="<%= public %>/country<%= queryString %>" target="_blank" class="text-muted"><%= public %>/country<%= queryString %></a></td>
-              </tr>
-              <tr>
-                <th class="col-1" scope="row">Country (ISO code)</th>
-                <td class="col-3"><%= lookup.country_iso %></td>
-                <td class="col-4 cmd">$ curl <a href="<%= public %>/country-iso<%= queryString %>" target="_blank" class="text-muted"><%= public %>/country-iso<%= queryString %></a></td>
-              </tr>
-              <tr>
-                <th class="col-1" scope="row">In EU?</th>
-                <td class="col-3"><%= lookup.country_eu %></td>
-                <td class="col-4 cmd"></td>
-              </tr>
-            <% } %>
-            <%if (lookup.registered_country) { %>
-              <tr>
-                <th class="col-1" scope="row">Registered Country</th>
-                <td class="col-3"><%= lookup.registered_country %></td>
-                <td class="col-4 cmd"></td>
-              </tr>
-            <% } %>
-            <%if (lookup.city) { %>
-              <tr>
-                <th class="col-1" scope="row">City</th>
-                <td class="col-3"><%= lookup.city %></td>
-                <td class="col-4 cmd">$ curl <a href="<%= public %>/city<%= queryString %>" target="_blank" class="text-muted"><%= public %>/city<%= queryString %></a></td>
-              </tr>
-            <% } %>
-            <%if (lookup.latitude) { %>
-              <tr>
-                <th class="col-1" scope="row">Latitude</th>
-                <td class="col-3"><%= lookup.latitude %></td>
-                <td class="col-4 cmd"></td>
-              </tr>
-            <% } %>
-            <%if (lookup.longitude) { %>
-              <tr>
-                <th class="col-1" scope="row">Longitude</th>
-                <td class="col-3"><%= lookup.longitude %></td>
-                <td class="col-4 cmd"></td>
-              </tr>
-            <% } %>
-            <%if (lookup.time_zone) { %>
-              <tr>
-                <th class="col-1" scope="row">Timezone</th>
-                <td class="col-3"><%= lookup.time_zone %></td>
-                <td class="col-4 cmd"></td>
-              </tr>
-            <% } %>
-            <%if (lookup.asn) { %>
-              <tr>
-                <th class="col-1" scope="row">ASN</th>
-                <td class="col-3"><%= lookup.asn %></td>
-                <td class="col-4 cmd">$ curl <a href="<%= public %>/asn<%= queryString %>" target="_blank" class="text-muted"><%= public %>/asn<%= queryString %></a></td>
-              </tr>
-              <tr>
-                <th class="col-1" scope="row">ASN (organization)</th>
-                <td class="col-3"><%= lookup.asn_org %></td>
-                <td class="col-4 cmd">$ curl <a href="<%= public %>/asn-org<%= queryString %>" target="_blank" class="text-muted"><%= public %>/asn-org<%= queryString %></a></td>
-              </tr>
-            <% } %>
-            <tr>
-              <th class="col-1" scope="row">Is Tor?</th>
-              <td class="col-3"><%= lookup.tor %></td>
-              <td class="col-4 cmd">$ curl <a href="<%= public %>/tor<%= queryString %>" target="_blank" class="text-muted"><%= public %>/tor<%= queryString %></a></td>
-            </tr>
-            <tr>
-              <th class="col-1" scope="row">Is Bad ASN?</th>
-              <td class="col-3"><%= lookup.bad_asn %></td>
-              <td class="col-4 cmd">$ curl <a href="<%= public %>/bad_asn<%= queryString %>" target="_blank" class="text-muted"><%= public %>/bad_asn<%= queryString %></a></td>
-            </tr>
-            <%if (lookup.user_agent) { %>
-              <tr>
-                <th class="col-1" scope="row">User&nbsp;agent</th>
-                <td class="col-3"><%= (`${lookup.user_agent.product}/${lookup.user_agent.version}`) %></td>
-                <td class="col-4 cmd"></td>
-              </tr>
-               
-              <tr>
-                <th class="col-1" scope="row">User&nbsp;agent: Comment</th>
-                <td class="col-3"><%= lookup.user_agent.comment %></td>
-                <td class="col-4 cmd"></td>
-              </tr>
-               
-              <tr>
-                <th class="col-1" scope="row">User&nbsp;agent: Raw</th>
-                <td class="col-3"><%= lookup.user_agent.raw_value %></td>
-                <td class="col-4 cmd"></td>
-              </tr>
-            <% } %>
-            <%if (text) { %>
-              <tr>
-                <th class="col-1" scope="row">Text</th>
-                <td class="col-3"><%= text %></td>
-                <td class="col-4 cmd">$ curl <%= public %><%= queryString %></td>
-              </tr>
-            <% } %>
-            <%if (json) { %>
-              <tr>
-                <th class="col-1" scope="row">JSON</th>
-                <td class="col-3"><%= json %></td>
-                <td class="col-4 cmd">$ curl <a href="<%= public %>/json<%= queryString %>" target="_blank" class="text-muted"><%= public %>/json<%= queryString %></a></td>
-              </tr>
-            <% } %>
-            <%if (stats) { %>
-              <tr>
-                <th class="col-1" scope="row">Stats</th>
-                <td class="col-3"><%= stats %></td>
-                <td class="col-4 cmd">$ curl <a href="<%= public %>/stats" target="_blank" class="text-muted"><%= public %>/stats</a></td>
-              </tr>
-            <% } %>
-          </tbody></table>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col text-start mt-4">
-          <p>
-            <em>By using this service and the source code you agree to the
-              <a href="https://www.maxmind.com/en/geolite2/eula" target="_blank" class="text-muted">MaxMind's GeoLite2 End User License Agreement</a>.
-              We never collect or store any raw log of visitor's identifiable information.
-              <a href="https://noscript.net/" target="_blank" class="text-muted">This page doesn't require javascript to be enabled by a visitor.</a>
-              <%if (noCloudflare) { %>
-                <a href="http://crimeflare.eu.org/" target="_blank" class="text-muted">This site is hosted from cloudflare-free environment.</a>
-              <% } %>
-            </em>
-          </p>
-        </div>
-      </div>
-      <!-- Footer -->
-      <footer class="d-flex flex-wrap justify-content-between align-items-center pt-3 mt-4 mb-4 border-top">
-        <ul class="nav">
-          <li class="nav-item text-muted">
-            Powered by
-            <a href="<%= homepage %>" target="_blank" class="nav-link px-2 text-muted footerlink"><%= defaultName %></a>
-            & 
-            <a href="https://dev.maxmind.com/geoip/geolite2-free-geolocation-data" target="_blank" class="nav-link px-2 text-muted footerlink">MaxMind GeoLite2 DB</a>
-          </li>
-        </ul>
-
-        <p class="mb-0 text-muted justify-content-end"><%= version %> (DB Version: <%= lastUpdate %>)</p>
-      </footer>
-    </div>
-  </body>
+    </body>
 </html>

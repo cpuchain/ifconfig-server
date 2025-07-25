@@ -1,0 +1,175 @@
+name: Node.js Jobs
+
+on:
+  push:
+    branches: [main]   # adjust as needed
+    tags: [ '*' ]      # any tag
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  packages: write
+  id-token: write
+
+jobs:
+  build_and_commit:
+    name: Lint, Build & Auto-Commit if Needed
+    runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.check_changes.outputs.changed }}
+    steps:
+      # 1. Checkout
+      - uses: actions/checkout@v4
+
+      # 2. Setup Node
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+          cache: yarn
+
+      # 3. Install dependencies
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      # 4. Lint Check
+      - name: Lint
+        run: yarn lint
+
+      # 5. Build
+      - name: Build
+        run: yarn build
+
+      # 6. Check for git changes after build
+      - name: Check for git changes
+        id: check_changes
+        run: |
+          if [[ -n "$(git status --porcelain)" ]]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      # 7. Auto-commit any changes produced by build
+      - name: Auto-commit build artifacts
+        if: steps.check_changes.outputs.changed == 'true' && !startsWith(github.ref, 'refs/tags/')
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: Auto-commit build artifacts [skip ci]"
+
+      # 8. Build and upload artifacts to Github
+      - name: Build executables
+        if: startsWith(github.ref, 'refs/tags/') && steps.check_changes.outputs.changed == 'false'
+        run: |
+          gitTag=$(git describe --tags --abbrev=0)
+          yarn build:dist
+          zip "ifconfig-server-${gitTag}-win.zip" ifconfig-server-win.exe
+          zip "ifconfig-server-${gitTag}-macos.zip" ifconfig-server-macos
+          zip "ifconfig-server-${gitTag}-linux.zip" ifconfig-server-linux
+
+      # Step 10: Upload executable as an artifact (optional for debugging)
+      - name: Upload Binary Artifact
+        if: startsWith(github.ref, 'refs/tags/') && steps.check_changes.outputs.changed == 'false'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ifconfig-server
+          path: ./ifconfig-server-*.zip
+
+  test:
+    name: Test (if no build changes)
+    needs: build_and_commit
+    if: needs.build_and_commit.outputs.changed == 'false'
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Checkout
+      - uses: actions/checkout@v4
+
+      # 2. Setup Node
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+          cache: yarn
+
+      # 3. Install dependencies
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      # 4. Tests
+      - name: Run tests
+        run: yarn test
+
+  docker:
+    name: Build and push Docker image to Github
+
+    permissions:
+      contents: read  # Allows access to repository files
+      packages: write # Required to push the Docker image to ghcr.io
+
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Log in to GitHub Container Registry (ghcr.io using GitHub token)
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Step 3: Determine Docker image tag based on git commit or git tag
+      - name: Determine Docker Image Tag
+        id: tags
+        run: |
+          IMAGE=ghcr.io/${{ github.repository }}
+          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            TAG="${IMAGE}:${{ github.ref_name }},${IMAGE}:latest"
+            echo "TAG=$TAG" >> $GITHUB_ENV
+          else
+            TAG="${IMAGE}:${{ github.sha }}"
+            echo "TAG=$TAG" >> $GITHUB_ENV
+          fi
+
+      # Step 4: Setup Docker
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Step 5: Build and Push Docker Image
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v6
+        with:
+          context: .                     # Specify the build context (current directory with the Dockerfile)
+          push: true                     # Push to container registry
+          tags: ${{ env.TAG }} # Image and tag
+          cache-from: type=registry,ref=ghcr.io/${{ github.repository }}:buildcache
+          cache-to: type=registry,ref=ghcr.io/${{ github.repository }}:buildcache,mode=max
+
+  upload:
+    needs:
+      - build_and_commit
+
+    if: startsWith(github.ref, 'refs/tags/') && needs.build_and_commit.outputs.changed == 'false'
+
+    name: Upload Artifacts to Github Release
+
+    permissions:
+      contents: write
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download Ubuntu Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: ifconfig-server
+          path: ./release-files
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: true
+          files: ./release-files/** # This attaches all files in the directory to the release

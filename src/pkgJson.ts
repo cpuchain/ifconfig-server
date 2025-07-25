@@ -1,4 +1,5 @@
-{
+/* eslint-disable */
+export const pkgJson = {
     "name": "ifconfig-server",
     "private": true,
     "version": "1.1.3",
@@ -92,4 +93,4 @@
     "resolutions": {
         "fast-glob": ">=3.3.3"
     }
-}
+} as const;
